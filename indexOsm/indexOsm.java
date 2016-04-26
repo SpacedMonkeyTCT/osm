@@ -1,4 +1,8 @@
+import java.io.File;
 import java.io.IOException;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.lucene.*;
 import org.apache.lucene.analysis.Analyzer;
@@ -20,6 +24,10 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 public class indexOsm
 {
 	public static void main(String[] args) {
@@ -31,10 +39,13 @@ public class indexOsm
 		try {
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			IndexWriter iwriter = new IndexWriter(directory, config);
+			File inputFile = new File(args[0]);
+
 			Document doc = new Document();
 			String text = "This is the text to be indexed.";
 			doc.add(new Field("fieldname", text, TextField.TYPE_STORED));
 			iwriter.addDocument(doc);
+
 			iwriter.close();
 
 			// Now search the index:
@@ -54,11 +65,8 @@ public class indexOsm
 			ireader.close();
 			directory.close();
 		}
-		catch (IOException e) {
-			System.err.println("Caught IOException: " + e.getMessage());
-		}
-		catch (ParseException e) {
-			System.err.println("Caught ParseException: " + e.getMessage());
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
